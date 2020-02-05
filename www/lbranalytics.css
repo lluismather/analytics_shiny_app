@@ -1,0 +1,22 @@
+.navbar {
+	border-width: 5px 1px 4px 1px !important;
+	border-top: 5px solid #e4003b;
+	background-color: #e4003b;
+	height: 67px;
+}
+
+.app-title {
+	color:white;
+	position: absolute;
+	top:35px;
+}
+
+
+.help-link {
+    right: 15px;
+    position: absolute;
+    top: 35px;
+    color:#fff;
+}
+
+
