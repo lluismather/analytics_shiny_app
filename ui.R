@@ -34,7 +34,7 @@ shinyUI(navbarPage(
   
                    windowTitle="Membership and Activism",
                    title=div(#div(img(src="logo.svg", height=35)), 
-                             div(p("Analytics App - WITH DUMMY DATA", class="app-title")), 
+                             div(p("Analytics App Preview - WITH DUMMY DATA, NOT FULLY FUNCTIONAL", class="app-title")), 
                              a("Help?", href="mailto:lluismather@gmail.com?subject=membership%20shinyapp%20help", class="help-link")),
                    theme=shinytheme("lumen"),
                    
