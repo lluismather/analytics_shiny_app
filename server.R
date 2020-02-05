@@ -32,7 +32,7 @@ plotColor <- brewer.pal(n=12, name="Set3")
 
 # ==================================
 
-geo <- read.csv('/data/random_geo.csv', stringsAsFactors=F)
+geo <- read.csv('data/random_geo.csv', stringsAsFactors=F)
 
 # generate members dummy data
 mem <- data.frame(Sex=sample(c('F', 'M', 'O', 'U'),
