@@ -1,0 +1,10 @@
+name: analytics_shiny_app
+title:
+username:
+account: lluismather
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1763922
+bundleId: 2782405
+url: https://lluismather.shinyapps.io/analytics_shiny_app/
+when: 1581083582.84202

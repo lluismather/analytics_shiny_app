@@ -5,7 +5,7 @@ library(magrittr)
 library(ggplot2)
 library(scales)
 library(RColorBrewer)
-
+#testing testing
 #===styles========================>>
 theme1 <- theme(plot.title = element_text(size=12, 
                                           face="bold", 
@@ -32,39 +32,60 @@ plotColor <- brewer.pal(n=12, name="Set3")
 
 # ==================================
 
-geo <- read.csv('data/random_geo.csv', stringsAsFactors=F)
+#geo <- read.csv('data/random_geo.csv', stringsAsFactors=F)
+
+mem <- read.csv('data/members1.csv', stringsAsFactors=F)
+vec_incl <- names(mem) %in% c("Sex", "Mosaic", "StatusCode", "source", "dialogue_user", "events_attendee", "chatter_lead", "is_donor",
+                              "donations_count", "donations_sum", "doorstep_user", "cc_user", "wpc_name", "region_name", "age", "mem_len", "age_cut",
+                              "wpc", "seat_17", "is_key_seat")
+mem <- mem[mem$source=="member", vec_incl]
+names(mem)[20] <- "key_seat"
+mem$activism_type <- ifelse(mem$is_donor==T, 'Donor',
+                            ifelse(mem$dialogue_user==T, 'Dialogue',
+                                   ifelse(mem$events_attendee==T, 'Event',
+                                          ifelse(mem$chatter_lead==T, 'Chatter', sample(c('None', 'Doorstep', 'Roleholder', 'Signup'), 1)))))
+mem <- mem[, -c(5:12, 18)]
+mem$key_seat <- ifelse(mem$key_seat==TRUE, ifelse(mem$seat_17=="Labour", "Defense", "Attack"), "Other")
+names(mem)[10] <- 'seat_held'
+mem$mem_type <- sample(c('member', 'registered', 'affiliated'), nrow(mem), replace=T, prob=c(0.7, 0.1, 0.2))
+
+wpcs_table <- mem %>% 
+  select(wpc_name, region_name, seat_held, key_seat) %>% 
+  distinct %>% 
+  arrange(wpc_name) %>%
+  filter(region_name!="")
 
 # generate members dummy data
-mem <- data.frame(Sex=sample(c('F', 'M', 'O', 'U'),
-                             size=500000, replace=T, prob=c(0.4276, 0.5684, 0.0028, 0.0012)),
-                  Mosaic=sample(c('A', 'B', 'C', 'D', 'E', 'F', 'G'),
-                                size=500000, replace=T, prob=c(0.4, 0.2, 0.1, 0.05, 0.05, 0.1, 0.1)),
-                  StatusCode=sample(c('ACCEPTED', 'ARREARS', 'PART-ARREARS', 'PRE-LAPSE'),
-                                    size=500000, replace=T, prob=c(0.9109, 0.0504, 0.027, 0.0118)),
-                  source=sample('membership', size=500000, replace=T),
-                  wpc_name=sample(geo$wpc_name, size=500000, replace=T),
-                  region_name=sample(NA, size=500000, replace=T),
-                  age=sample(floor(rnorm(500000, mean=47, sd=17))),
-                  mem_len=floor(abs(rnorm(500000, mean=5, sd=6))),
-                  age_cut=sample(NA, size=500000, replace=T),
-                  seat_held=sample(c('Green', 'Labour', 'LibDem', 'Other', 'Plaid', 'SNP', 'Tory'),
-                                   size=500000, replace=T, prob=c(0.0061, 0.5712, 0.0154, 0.0011, 0.0047, 0.0233, 0.3782)),
-                  key_seat=sample(c('Defense', 'Attack', 'Other'),
-                                  size=500000, replace=T, prob=c(0.2, 0.2, 0.6)),
-                  activism_type=sample(c('Donor', 'Dialogue', 'Event', 'Chatter', 'None', 'Doorstep', 'Roleholder', 'Signup'),
-                                       size=500000, replace=T, prob=c(0.1, 0.025, 0.025, 0.05, 0.5, 0.1, 0.025, 0.175)),
-                  mem_type=sample(c('member', 'registered', 'affiliated'),
-                                  size=500000, replace=T, prob=c(0.7, 0.1, 0.2)))
-mem$region_name <- geo$region_name[match(mem$wpc_name, geo$wpc_name)]
+# mem <- data.frame(Sex=sample(c('F', 'M', 'O', 'U'),
+#                              size=500000, replace=T, prob=c(0.4276, 0.5684, 0.0028, 0.0012)),
+#                   Mosaic=sample(c('A', 'B', 'C', 'D', 'E', 'F', 'G'),
+#                                 size=500000, replace=T, prob=c(0.4, 0.2, 0.1, 0.05, 0.05, 0.1, 0.1)),
+#                   StatusCode=sample(c('ACCEPTED', 'ARREARS', 'PART-ARREARS', 'PRE-LAPSE'),
+#                                     size=500000, replace=T, prob=c(0.9109, 0.0504, 0.027, 0.0118)),
+#                   source=sample('membership', size=500000, replace=T),
+#                   wpc_name=sample(geo$wpc_name, size=500000, replace=T),
+#                   region_name=sample(NA, size=500000, replace=T),
+#                   age=sample(floor(rnorm(500000, mean=47, sd=17))),
+#                   mem_len=floor(abs(rnorm(500000, mean=5, sd=6))),
+#                   age_cut=sample(NA, size=500000, replace=T),
+#                   seat_held=sample(c('Green', 'Labour', 'LibDem', 'Other', 'Plaid', 'SNP', 'Tory'),
+#                                    size=500000, replace=T, prob=c(0.0061, 0.5712, 0.0154, 0.0011, 0.0047, 0.0233, 0.3782)),
+#                   key_seat=sample(c('Defense', 'Attack', 'Other'),
+#                                   size=500000, replace=T, prob=c(0.2, 0.2, 0.6)),
+#                   activism_type=sample(c('Donor', 'Dialogue', 'Event', 'Chatter', 'None', 'Doorstep', 'Roleholder', 'Signup'),
+#                                        size=500000, replace=T, prob=c(0.1, 0.025, 0.025, 0.05, 0.5, 0.1, 0.025, 0.175)),
+#                   mem_type=sample(c('member', 'registered', 'affiliated'),
+#                                   size=500000, replace=T, prob=c(0.7, 0.1, 0.2)))
+# mem$region_name <- geo$region_name[match(mem$wpc_name, geo$wpc_name)]
 
 # wpcs and other data
-wpcs_table <- geo %>%
-  mutate(seat_held=sample(c('Green', 'Labour', 'LibDem', 'Other', 'Plaid', 'SNP', 'Tory'),
-                          size=630, replace=T, prob=c(0.0061, 0.5712, 0.0154, 0.0011, 0.0047, 0.0233, 0.3782)),
-         key_seat=sample(c('Defense', 'Attack', 'Other'),
-                         size=630, replace=T, prob=c(0.2, 0.2, 0.6))) %>%
-  arrange(wpc_name) %>%
-  filter(region_name!='')
+# wpcs_table <- geo %>%
+#   mutate(seat_held=sample(c('Green', 'Labour', 'LibDem', 'Other', 'Plaid', 'SNP', 'Tory'),
+#                           size=630, replace=T, prob=c(0.0061, 0.5712, 0.0154, 0.0011, 0.0047, 0.0233, 0.3782)),
+#          key_seat=sample(c('Defense', 'Attack', 'Other'),
+#                          size=630, replace=T, prob=c(0.2, 0.2, 0.6))) %>%
+#   arrange(wpc_name) %>%
+#   filter(region_name!='')
 
 # ===================================
 
@@ -104,7 +125,7 @@ shinyServer(function(input, output) {
                                                                      )
                                                                    ),
                                                                    columns = list(
-                                                                     list(title = "clp")
+                                                                     list(title = "clp - ensure overide is on")
                                                                    ),
                                                                    autoWidth = TRUE,
                                                                    sDom  = '<"top">rt<"bottom">ipl'
@@ -173,7 +194,7 @@ shinyServer(function(input, output) {
       
       gg +
         xlim(0, xlim_val2) +
-        labs(title="", x=x_var, y="") +
+        labs(title=paste(input$main_view, '-', ifelse(input$graph_type=='histogram', 'histogram', 'proportions')), x=x_var, y="") +
         theme1
       
     }
